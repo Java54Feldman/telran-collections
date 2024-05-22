@@ -25,6 +25,32 @@ public abstract class CollectionTest {
 		Integer [] actual = collection.stream().toArray(Integer[]::new);
 		assertArrayEquals(expected, actual);
 	}
-	//TODO tests of all methods for interface Collection 
-	// (see the interface Collection) 
+	//tests of all methods for interface Collection 
+	//(see the interface Collection) 
+	@Test
+	void addTest() {
+	    assertTrue(collection.add(999));
+	    runTest(new Integer[] {-20, 10, 1, 100, -5, 999});
+	}
+
+	@Test
+	void removeTest() {
+	    assertTrue(collection.remove(100));
+	    runTest(new Integer[] {-20, 10, 1, -5});
+	}
+
+	@Test
+	void containsTest() {
+	    assertTrue(collection.contains(10));
+	    assertFalse(collection.contains(999));
+	}
+
+	@Test
+	void sizeTest() {
+	    assertEquals(5, collection.size());
+	    collection.add(999);
+	    assertEquals(6, collection.size());
+	    collection.remove(999);
+	    assertEquals(5, collection.size());
+	}
 }

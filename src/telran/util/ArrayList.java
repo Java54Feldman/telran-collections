@@ -2,34 +2,44 @@ package telran.util;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
 	private static final int DEFAULT_CAPACITY = 16;
-	private int size;
+	private int size = 0;
 	private T[] array;
+
 	@SuppressWarnings("unchecked")
 	public ArrayList(int capacity) {
-		array = (T[]) new Object[capacity]; 
+		array = (T[]) new Object[capacity];
 	}
+
 	public ArrayList() {
 		this(DEFAULT_CAPACITY);
 	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new ArrayListIterator();
+	}
+
 	private class ArrayListIterator implements Iterator<T> {
+		int index = 0;
 
 		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			// size
-			return false;
+			return array != null ? index < size : false;
 		}
 
 		@Override
 		public T next() {
-			// TODO Auto-generated method stub
-			return null;
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			return array[index++];
 		}
-		
 	}
+
 	@Override
 	/**
 	 * adds object at end of array, that is, at index == size
@@ -44,8 +54,8 @@ public class ArrayList<T> implements List<T> {
 
 	private void allocate() {
 		array = Arrays.copyOf(array, array.length * 2);
-		
 	}
+
 	@Override
 	public boolean remove(T pattern) {
 		int index = indexOf(pattern);
@@ -59,7 +69,6 @@ public class ArrayList<T> implements List<T> {
 
 	@Override
 	public boolean contains(T pattern) {
-		
 		return indexOf(pattern) > -1;
 	}
 
@@ -69,41 +78,63 @@ public class ArrayList<T> implements List<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public T get(int index) {
-		// TODO Auto-generated method stub
-		// если индекс больше 0, то эксепшн, иначе возвращаем
-		return null;
+		if (index < 0 || index >= size) {
+			throw new IndexOutOfBoundsException();
+		}
+		return array[index];
 	}
 
 	@Override
 	public void add(int index, T obj) {
-		// TODO Auto-generated method stub
-		// все методы на Array.copy
+		if (index < 0 || index > size) {
+			throw new IllegalArgumentException();
+		}
+		if (index == size) {
+			add(obj);
+		} else {
+			if (size == array.length) {
+				allocate();
+			}
+			System.arraycopy(array, index, array, index + 1, size - index);
+			array[index] = obj;
+			size++;
+		}
 
 	}
 
 	@Override
 	public T remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		if (index < 0 || index >= size) {
+			throw new IndexOutOfBoundsException();
+		}
+		T[] arrayNew = Arrays.copyOf(array, size--);
+		System.arraycopy(arrayNew, 0, array, 0, index);
+		T res = array[index];
+		System.arraycopy(arrayNew, index + 1, array, index, size - index);
+		return res;
 	}
 
 	@Override
 	public int indexOf(T pattern) {
-		// TODO Auto-generated method stub
-		return 0;
+		int index = 0;
+		while (index < size && !equals(array[index], pattern)) {
+			index++;
+		}
+		return index == size ? -1 : index;
+	}
+
+	private boolean equals(T elem1, T elem2) {
+		return elem1 == null ? elem1 == elem2 : elem1.equals(elem2);
 	}
 
 	@Override
 	public int lastIndexOf(T pattern) {
-		// TODO Auto-generated method stub
-		return 0;
+		int index = size - 1;
+		while (index >= 0 && !equals(array[index], pattern)) {
+			index--;
+		}
+		return index;
 	}
 
 }
