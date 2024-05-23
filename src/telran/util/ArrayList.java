@@ -28,7 +28,7 @@ public class ArrayList<T> implements List<T> {
 
 		@Override
 		public boolean hasNext() {
-			return array != null ? index < size : false;
+			return index < size;
 		}
 
 		@Override
@@ -90,16 +90,12 @@ public class ArrayList<T> implements List<T> {
 		if (index < 0 || index > size) {
 			throw new IllegalArgumentException();
 		}
-		if (index == size) {
-			add(obj);
-		} else {
-			if (size == array.length) {
-				allocate();
-			}
-			System.arraycopy(array, index, array, index + 1, size - index);
-			array[index] = obj;
-			size++;
+		if (size == array.length) {
+			allocate();
 		}
+		System.arraycopy(array, index, array, index + 1, size - index);
+		array[index] = obj;
+		size++;
 
 	}
 
@@ -108,11 +104,10 @@ public class ArrayList<T> implements List<T> {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException();
 		}
-		T[] arrayNew = Arrays.copyOf(array, size--);
-		System.arraycopy(arrayNew, 0, array, 0, index);
-		T res = array[index];
-		System.arraycopy(arrayNew, index + 1, array, index, size - index);
-		return res;
+		T removedObj = array[index];
+		size--;
+		System.arraycopy(array, index + 1, array, index, size - index);
+		return removedObj;
 	}
 
 	@Override
