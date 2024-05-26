@@ -28,16 +28,8 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public boolean remove(T pattern) {
-		Node<T> current = head;
-		boolean removed = false;
-		while (current != null && !removed) {
-			if (Objects.equals(current.data, pattern)) {
-				removeNode(current);
-				removed = true;
-			}
-			current = current.next;
-		}
-		return removed;
+		int index = indexOf(pattern);
+		return index >= 0 ? remove(index) != null : false;
 	}
 
 	@Override
