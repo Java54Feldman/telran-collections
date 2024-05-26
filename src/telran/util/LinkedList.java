@@ -42,15 +42,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public boolean contains(T pattern) {
-		Node<T> current = head;
-		boolean found = false;
-		while (current != null && !found) {
-			if (Objects.equals(current.data, pattern)) {
-				found = true;
-			}
-			current = current.next;
-		}
-		return found;
+		return indexOf(pattern) >= 0;
 	}
 
 	@Override
