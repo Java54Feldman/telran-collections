@@ -1,20 +1,24 @@
 package telran.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class LinkedList<T> implements List<T> {
 	Node<T> head;
 	Node<T> tail;
 	int size;
-private static class Node<T> {
-	T data;
-	Node<T> prev;
-	Node<T> next;
-	Node(T data) {
-		this.data = data;
+
+	private static class Node<T> {
+		T data;
+		Node<T> prev;
+		Node<T> next;
+
+		Node(T data) {
+			this.data = data;
+		}
 	}
-	
-}
+
 	@Override
 	public boolean add(T obj) {
 		Node<T> node = new Node<>(obj);
@@ -24,32 +28,65 @@ private static class Node<T> {
 
 	@Override
 	public boolean remove(T pattern) {
-		// TODO Auto-generated method stub
-		return false;
+		Node<T> current = head;
+		boolean removed = false;
+		while (current != null && !removed) {
+			if (Objects.equals(current.data, pattern)) {
+				removeNode(current);
+				removed = true;
+			}
+			current = current.next;
+		}
+		return removed;
 	}
 
 	@Override
 	public boolean contains(T pattern) {
-		// TODO Auto-generated method stub
-		return false;
+		Node<T> current = head;
+		boolean found = false;
+		while (current != null && !found) {
+			if (Objects.equals(current.data, pattern)) {
+				found = true;
+			}
+			current = current.next;
+		}
+		return found;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedListIterator();
+	}
+
+	private class LinkedListIterator implements Iterator<T> {
+		Node<T> current = head;
+
+		@Override
+		public boolean hasNext() {
+			return current != null;
+		}
+
+		@Override
+		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			T data = current.data;
+			current = current.next;
+			return data;
+		}
+
 	}
 
 	@Override
 	public T get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		List.checkIndex(index, size, true);
+		return getNode(index).data;
 	}
 
 	@Override
@@ -61,31 +98,71 @@ private static class Node<T> {
 
 	@Override
 	public T remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		List.checkIndex(index, size, true);
+		Node<T> node = getNode(index);
+		T data = node.data;
+		removeNode(node);
+		return data;
+	}
+
+	private void removeNode(Node<T> node) {
+		if (node == head) {
+			removeHead();
+		} else if (node == tail) {
+			removeTail();
+		} else {
+			removeMiddle(node);
+		}
+		size--;
+
+	}
+
+	private void removeMiddle(Node<T> node) {
+		Node<T> nodePrev = node.prev;
+		Node<T> nodeNext = node.next;
+		nodePrev.next = nodeNext;
+		nodeNext.prev = nodePrev;
+
+	}
+
+	private void removeTail() {
+		tail = tail.prev;
+		tail.next = null;
+
+	}
+
+	private void removeHead() {
+		head = head.next;
+		head.prev = null;
+
 	}
 
 	@Override
 	public int indexOf(T pattern) {
-		// TODO Auto-generated method stub
-		return 0;
+		int index = 0;
+		while (index < size && !Objects.equals(getNode(index).data, pattern)) {
+			index++;
+		}
+		return index == size ? -1 : index;
 	}
 
 	@Override
 	public int lastIndexOf(T pattern) {
-		// TODO Auto-generated method stub
-		return 0;
+		int index = size - 1;
+		while (index >= 0 && !Objects.equals(getNode(index).data, pattern)) {
+			index--;
+		}
+		return index;
 	}
+
 	private Node<T> getNode(int index) {
-		return index < size / 2 ? //оптимизация, сложность N
-				getNodeFormHead(index) 
-				: 
-				getNodeFormTail(index); 
+		return index < size / 2 ? // оптимизация, сложность N
+				getNodeFormHead(index) : getNodeFormTail(index);
 	}
 
 	private Node<T> getNodeFormTail(int index) {
 		Node<T> current = head;
-		for(int i = 0; i < index; i++) {
+		for (int i = 0; i < index; i++) {
 			current = current.next;
 		}
 		return current;
@@ -93,23 +170,22 @@ private static class Node<T> {
 
 	private Node<T> getNodeFormHead(int index) {
 		Node<T> current = tail;
-		for(int i = size - 1; i > index; i--) {
+		for (int i = size - 1; i > index; i--) {
 			current = current.prev;
 		}
 		return current;
 	}
+
 	private void addNode(int index, Node<T> node) {
-		if(index == 0) {
+		if (index == 0) {
 			addHead(node);
-		} else if(index == size) {
+		} else if (index == size) {
 			addTail(node);
 		} else {
 			addMiddle(node, index);
 		}
 		size++;
 	}
-
-
 
 	private void addMiddle(Node<T> node, int index) {
 		Node<T> nodeNext = getNode(index);
@@ -118,27 +194,24 @@ private static class Node<T> {
 		nodePrev.next = node;
 		node.prev = nodePrev;
 		node.next = nodeNext;
-		
 	}
 
 	private void addTail(Node<T> node) {
-		//head cannot be null
+		// head cannot be null
 		tail.next = node;
 		node.prev = tail;
 		tail = node;
-		
+
 	}
 
 	private void addHead(Node<T> node) {
-		if(head == null) {
+		if (head == null) {
 			head = tail = node;
 		} else {
 			node.next = head;
 			head.prev = node;
 			head = node;
 		}
-		
 	}
-
 
 }

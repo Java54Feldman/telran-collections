@@ -29,8 +29,8 @@ public abstract class ListTest extends CollectionTest {
 	void addIndexTest() {
 	    list.add(2, 999);
 	    runTest(new Integer[] {-20, 10, 999, 1, 100, -5});
-	    assertThrows(IllegalArgumentException.class, () -> list.add(-1, 999));
-	    assertThrows(IllegalArgumentException.class, () -> list.add(7, 999));
+	    assertThrows(IndexOutOfBoundsException.class, () -> list.add(-1, 999));
+	    assertThrows(IndexOutOfBoundsException.class, () -> list.add(7, 999));
 	}
 
 	@Test
