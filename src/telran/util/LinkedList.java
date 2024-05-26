@@ -21,6 +21,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public boolean add(T obj) {
+		//O[1]
 		Node<T> node = new Node<>(obj);
 		addNode(size, node);
 		return true;
@@ -28,22 +29,26 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public boolean remove(T pattern) {
+		//O[N]
 		int index = indexOf(pattern);
 		return index >= 0 ? remove(index) != null : false;
 	}
 
 	@Override
 	public boolean contains(T pattern) {
+		//O[N]
 		return indexOf(pattern) >= 0;
 	}
 
 	@Override
 	public int size() {
+		//O[1]
 		return size;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
+		//O[1]
 		return new LinkedListIterator();
 	}
 
@@ -52,11 +57,13 @@ public class LinkedList<T> implements List<T> {
 
 		@Override
 		public boolean hasNext() {
+			//O[1]
 			return current != null;
 		}
 
 		@Override
 		public T next() {
+			//O[1]
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
@@ -69,12 +76,14 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public T get(int index) {
+		//O[N]
 		List.checkIndex(index, size, true);
 		return getNode(index).data;
 	}
 
 	@Override
 	public void add(int index, T obj) {
+		//O[1]
 		List.checkIndex(index, size, false);
 		Node<T> node = new Node<>(obj);
 		addNode(index, node);
@@ -82,6 +91,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public T remove(int index) {
+		//O[N]
 		List.checkIndex(index, size, true);
 		Node<T> node = getNode(index);
 		T data = node.data;
@@ -90,6 +100,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void removeNode(Node<T> node) {
+		//O[1]
 		if (node == head) {
 			removeHead();
 		} else if (node == tail) {
@@ -102,6 +113,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void removeMiddle(Node<T> node) {
+		//O[1]
 		Node<T> nodePrev = node.prev;
 		Node<T> nodeNext = node.next;
 		nodePrev.next = nodeNext;
@@ -110,12 +122,14 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void removeTail() {
+		//O[1]
 		tail = tail.prev;
 		tail.next = null;
 
 	}
 
 	private void removeHead() {
+		//O[1]
 		head = head.next;
 		head.prev = null;
 
@@ -123,6 +137,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public int indexOf(T pattern) {
+		//O[N]
 		int index = 0;
 		while (index < size && !Objects.equals(getNode(index).data, pattern)) {
 			index++;
@@ -132,6 +147,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public int lastIndexOf(T pattern) {
+		//O[N]
 		int index = size - 1;
 		while (index >= 0 && !Objects.equals(getNode(index).data, pattern)) {
 			index--;
@@ -140,11 +156,13 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private Node<T> getNode(int index) {
+		//O[N]
 		return index < size / 2 ? // оптимизация, сложность N
 				getNodeFormHead(index) : getNodeFormTail(index);
 	}
 
 	private Node<T> getNodeFormTail(int index) {
+		//O[N]
 		Node<T> current = head;
 		for (int i = 0; i < index; i++) {
 			current = current.next;
@@ -153,6 +171,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private Node<T> getNodeFormHead(int index) {
+		//O[N]
 		Node<T> current = tail;
 		for (int i = size - 1; i > index; i--) {
 			current = current.prev;
@@ -161,6 +180,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void addNode(int index, Node<T> node) {
+		//O[1]
 		if (index == 0) {
 			addHead(node);
 		} else if (index == size) {
@@ -172,6 +192,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void addMiddle(Node<T> node, int index) {
+		//O[1]
 		Node<T> nodeNext = getNode(index);
 		Node<T> nodePrev = nodeNext.prev;
 		nodeNext.prev = node;
@@ -181,6 +202,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void addTail(Node<T> node) {
+		//O[1]
 		// head cannot be null
 		tail.next = node;
 		node.prev = tail;
@@ -189,6 +211,7 @@ public class LinkedList<T> implements List<T> {
 	}
 
 	private void addHead(Node<T> node) {
+		//O[1]
 		if (head == null) {
 			head = tail = node;
 		} else {
