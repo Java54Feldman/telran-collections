@@ -1,9 +1,10 @@
 package telran.util.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import telran.util.List;
 
@@ -34,11 +35,34 @@ public abstract class ListTest extends CollectionTest {
 	}
 
 	@Test
-	void removeIndexTest() {
+	void removeIndexTestOld() {
 	    assertEquals((Integer) 1, list.remove(2));
 	    runTest(new Integer[] {-20, 10, 100, -5});
 	    assertThrows(IndexOutOfBoundsException.class, () -> list.remove(-1));
 	    assertThrows(IndexOutOfBoundsException.class, () -> list.remove(4));
+	    
+	}
+	@Test
+	void removeIndexTest() {
+		Integer num0 = -20, num2 = 100, numLast = -5;
+
+		Integer[] expected0 = { 10, 1, 100, -5 };
+		Integer[] expected0_2 = { 10, 1, -5 };
+		Integer[] expected0_2_last = { 10, 1 };
+		assertEquals(num0, list.remove(0));
+		runTest(expected0);
+		assertEquals(num2, list.remove(2));
+		runTest(expected0_2);
+		assertEquals(numLast, list.remove(list.size() - 1));
+		runTest(expected0_2_last);
+		testIndexExceptions(() -> list.remove(numbers.length));
+		testIndexExceptions(() -> list.remove(-1));
+		list.remove(0);
+		list.remove(0);
+		runTest(new Integer[0]);
+	}
+	void testIndexExceptions(Executable executable) {
+		assertThrowsExactly(IndexOutOfBoundsException.class, executable);
 	}
 
 	@Test

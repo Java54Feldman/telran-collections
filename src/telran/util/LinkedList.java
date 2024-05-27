@@ -21,7 +21,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public boolean add(T obj) {
-		//O[1]
+		//O[N]
 		Node<T> node = new Node<>(obj);
 		addNode(size, node);
 		return true;
@@ -31,7 +31,12 @@ public class LinkedList<T> implements List<T> {
 	public boolean remove(T pattern) {
 		//O[N]
 		int index = indexOf(pattern);
-		return index >= 0 ? remove(index) != null : false;
+		boolean res = false;
+		if (index > -1) {
+			res = true;
+			remove(index);
+		}
+		return res;
 	}
 
 	@Override
@@ -83,7 +88,7 @@ public class LinkedList<T> implements List<T> {
 
 	@Override
 	public void add(int index, T obj) {
-		//O[1]
+		//O[N]
 		List.checkIndex(index, size, false);
 		Node<T> node = new Node<>(obj);
 		addNode(index, node);
@@ -93,10 +98,11 @@ public class LinkedList<T> implements List<T> {
 	public T remove(int index) {
 		//O[N]
 		List.checkIndex(index, size, true);
-		Node<T> node = getNode(index);
-		T data = node.data;
-		removeNode(node);
-		return data;
+		Node<T> removed = getNode(index);
+		T res = null;
+		if(removed != null) res = removed.data;
+		removeNode(removed);
+		return res;
 	}
 
 	private void removeNode(Node<T> node) {
@@ -108,8 +114,13 @@ public class LinkedList<T> implements List<T> {
 		} else {
 			removeMiddle(node);
 		}
+		setNulls(node);
 		size--;
-
+	}
+	private void setNulls(Node<T> removed) {
+		removed.next = null;
+		removed.prev = null;
+		removed.data = null;
 	}
 
 	private void removeMiddle(Node<T> node) {
@@ -130,27 +141,35 @@ public class LinkedList<T> implements List<T> {
 
 	private void removeHead() {
 		//O[1]
-		head = head.next;
-		head.prev = null;
+		if(head == tail) {
+			head = tail = null;
+		} else {
+			head = head.next;
+			head.prev = null;
+		}
 
 	}
 
 	@Override
 	public int indexOf(T pattern) {
 		//O[N]
+		Node<T> current = head;
 		int index = 0;
-		while (index < size && !Objects.equals(getNode(index).data, pattern)) {
+		while(index < size && !Objects.equals(current.data, pattern)) {
 			index++;
+			current = current.next;
 		}
-		return index == size ? -1 : index;
+		return index < size ? index : -1;
 	}
 
 	@Override
 	public int lastIndexOf(T pattern) {
 		//O[N]
+		Node<T> current = tail;
 		int index = size - 1;
-		while (index >= 0 && !Objects.equals(getNode(index).data, pattern)) {
+		while(index >= 0 && !Objects.equals(current.data, pattern)) {
 			index--;
+			current = current.prev;
 		}
 		return index;
 	}
