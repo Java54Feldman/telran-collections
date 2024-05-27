@@ -10,6 +10,7 @@ import telran.util.Collection;
 public abstract class CollectionTest {
 	protected Collection<Integer> collection;
 	Integer[] numbers = {-20, 10, 1, 100, -5};
+	int newNumber = 1000000;
 	
 	@BeforeEach
 	void setUp() {
@@ -20,6 +21,20 @@ public abstract class CollectionTest {
 	@Test
 	void iteratorTest() {
 		runTest(numbers);
+	}
+	@Test
+	void addEqualedTest() {
+		
+		Integer[] expected = {-20, 10, 1, 100, -5, numbers[0]};
+		assertTrue(collection.add(numbers[0]));
+		runTest(expected);
+	}
+	@Test
+	void addUniqueTest() {
+		
+		Integer[] expected = {-20, 10, 1, 100, -5, newNumber};
+		assertTrue(collection.add(newNumber));
+		runTest(expected);
 	}
 	protected void runTest(Integer[] expected) {
 		Integer [] actual = collection.stream().toArray(Integer[]::new);

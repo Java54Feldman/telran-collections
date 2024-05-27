@@ -99,8 +99,7 @@ public class LinkedList<T> implements List<T> {
 		//O[N]
 		List.checkIndex(index, size, true);
 		Node<T> removed = getNode(index);
-		T res = null;
-		if(removed != null) res = removed.data;
+		T res = removed.data;
 		removeNode(removed);
 		return res;
 	}
