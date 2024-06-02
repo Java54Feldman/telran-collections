@@ -16,6 +16,7 @@ public abstract class CollectionTest {
 	void setUp() {
 		for (Integer num: numbers) {
 			collection.add(num);
+
 		}
 	}
 	@Test
@@ -24,7 +25,6 @@ public abstract class CollectionTest {
 	}
 	@Test
 	void addEqualedTest() {
-		
 		Integer[] expected = {-20, 10, 1, 100, -5, numbers[0]};
 		assertTrue(collection.add(numbers[0]));
 		runTest(expected);

@@ -1,6 +1,7 @@
 package telran.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 @SuppressWarnings("unchecked")
 public class HashSet<T> implements Set<T> {
@@ -9,22 +10,51 @@ public class HashSet<T> implements Set<T> {
 	List<T>[] hashTable;
 	int size;
 	float factor;
+
 	public class HashSetIterator implements Iterator<T> {
+		int index = 0;
+		Iterator<T> currentListIterator = null;
+
+		public HashSetIterator() {
+			advanceIndex();
+		}
+
+		public void advanceIndex() {
+			while (index < hashTable.length && (hashTable[index] == null || hashTable[index].size() == 0)) {
+				index++;
+			}
+			if (index < hashTable.length) {
+				currentListIterator = hashTable[index].iterator();
+			}
+		}
 
 		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			return false;
+			boolean hasNext = true;
+			if (currentListIterator == null || !currentListIterator.hasNext()) {
+				index++;
+				advanceIndex();
+				hasNext = currentListIterator != null && currentListIterator.hasNext();
+			}
+			return hasNext;
 		}
 
 		@Override
 		public T next() {
-			// TODO Auto-generated method stub
-			return null;
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			T nextElement = currentListIterator.next();
+			if(!currentListIterator.hasNext()) {
+				index++;
+				advanceIndex();
+			}
+			return nextElement;
+
 		}
-		
+
 	}
-	
+
 	public HashSet(int hashTableLength, float factor) {
 		hashTable = new List[hashTableLength];
 		this.factor = factor;
@@ -49,46 +79,50 @@ public class HashSet<T> implements Set<T> {
 	}
 
 	private void hashTableReallocation() {
-		List<T> [] tmp = new List[hashTable.length * 2];
-		for(List<T> list: hashTable) {
-			if(list != null) {
-				for(T obj: list) {
+		List<T>[] tmp = new List[hashTable.length * 2];
+		for (List<T> list : hashTable) {
+			if (list != null) {
+				for (T obj : list) {
 					addObjInHashTable(obj, tmp);
 				}
 			}
 		}
 		hashTable = tmp;
-		
+
 	}
 
-	private void addObjInHashTable(T obj, List<T> [] table) {
-		int index = getIndex(obj);
-		List<T> list = hashTable[index];
-		if(list == null) {
-			list = new LinkedList<T>();
-			hashTable[index] = list;
+	private void addObjInHashTable(T obj, List<T>[] table) {
+		int index = getIndex(obj, table);
+		List<T> list = table[index];
+		if (list == null) {
+			list = new LinkedList<>();
+			table[index] = list;
 		}
 		list.add(obj);
-		
+
 	}
 
-	private int getIndex(T obj) {
+	private int getIndex(T obj, List<T>[] table) {
 		int hashCode = obj.hashCode();
-		int index = Math.abs(hashCode % hashTable.length);
+		int index = Math.abs(hashCode % table.length);
 		return index;
 	}
 
 	@Override
 	public boolean remove(T pattern) {
-		// TODO Auto-generated method stub
-		//находим связ список. если налл, то его нет
-		return false;
+		boolean res = contains(pattern);
+		if (res) {
+			int index = getIndex(pattern, hashTable);
+			hashTable[index].remove(pattern);
+			size--;
+		}
+		return res;
 	}
 
 	@Override
 	public boolean contains(T pattern) {
-		//O[1] !!
-		int index = getIndex(pattern);
+		// O[1] !!
+		int index = getIndex(pattern, hashTable);
 		List<T> list = hashTable[index];
 		return list != null && list.contains(pattern);
 	}
@@ -105,9 +139,17 @@ public class HashSet<T> implements Set<T> {
 
 	@Override
 	public T get(T pattern) {
-		// TODO Auto-generated method stub
-		//ищем объект в линкед листе и возвращаем ссылку на него
-		return null;
+		T res = null;
+		int index = getIndex(pattern, hashTable);
+		List<T> list = hashTable[index];
+		if (list != null) {
+			for (T element : list) {
+				if (element.equals(pattern)) {
+					res = element;
+				}
+			}
+		}
+		return res;
 	}
 
 }
