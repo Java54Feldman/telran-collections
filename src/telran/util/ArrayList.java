@@ -88,7 +88,7 @@ public class ArrayList<T> implements List<T> {
 	@Override
 	public void add(int index, T obj) {
 		if (index < 0 || index > size) {
-			throw new IllegalArgumentException();
+			throw new IndexOutOfBoundsException();
 		}
 		if (size == array.length) {
 			allocate();
