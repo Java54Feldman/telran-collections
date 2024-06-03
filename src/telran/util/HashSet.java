@@ -11,32 +11,26 @@ public class HashSet<T> implements Set<T> {
 	int size;
 	float factor;
 
-	public class HashSetIterator implements Iterator<T> {
-		int index = 0;
-		Iterator<T> currentListIterator = null;
+	private class HashSetIterator implements Iterator<T> {
+		Iterator<T> iterator;
 
-		public HashSetIterator() {
-			advanceIndex();
+		int iteratorIndex;
+
+		HashSetIterator() {
+			iteratorIndex = 0;
+			iterator = getIterator(0);
+			setIteratorIndex();
 		}
 
-		public void advanceIndex() {
-			while (index < hashTable.length && (hashTable[index] == null || hashTable[index].size() == 0)) {
-				index++;
-			}
-			if (index < hashTable.length) {
-				currentListIterator = hashTable[index].iterator();
-			}
+		private Iterator<T> getIterator(int index) {
+			List<T> list = hashTable[index];
+			return list == null ? null : list.iterator();
 		}
 
 		@Override
 		public boolean hasNext() {
-			boolean hasNext = true;
-			if (currentListIterator == null || !currentListIterator.hasNext()) {
-				index++;
-				advanceIndex();
-				hasNext = currentListIterator != null && currentListIterator.hasNext();
-			}
-			return hasNext;
+
+			return iteratorIndex < hashTable.length;
 		}
 
 		@Override
@@ -44,12 +38,18 @@ public class HashSet<T> implements Set<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			T nextElement = currentListIterator.next();
-			if(!currentListIterator.hasNext()) {
-				index++;
-				advanceIndex();
+			T res = iterator.next();
+			setIteratorIndex();
+			return res;
+		}
+
+		private void setIteratorIndex() {
+			while (iteratorIndex < hashTable.length && (iterator == null || !iterator.hasNext())) {
+				iteratorIndex++;
+				if (iteratorIndex < hashTable.length) {
+					iterator = getIterator(iteratorIndex);
+				}
 			}
-			return nextElement;
 
 		}
 
