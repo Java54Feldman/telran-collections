@@ -2,12 +2,17 @@ package telran.util.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import telran.util.Collection;
 
 public abstract class CollectionTest {
+	private static final int N_ELEMENTS = 1_048_575;
+	private static final int N_RUNS = 10000000;
 	protected Collection<Integer> collection;
 	Integer[] numbers = {-20, 10, 1, 100, -5};
 	int newNumber = 1000000;
@@ -67,5 +72,23 @@ public abstract class CollectionTest {
 	    assertEquals(6, collection.size());
 	    collection.remove(999);
 	    assertEquals(5, collection.size());
+	}
+	
+	@Test
+	@Disabled
+	void performanceAddTest() {
+		Random random = new Random();
+		int[] randomNumbers = random.ints().distinct().limit(N_ELEMENTS).toArray();
+		for(Integer num: numbers) {
+			collection.remove(num);
+		}
+		for(int i = 0; i < N_ELEMENTS; i++) {
+			collection.add(randomNumbers[i]);
+		}
+		assertEquals(N_ELEMENTS, collection.size());
+		for(int i = 0; i < N_RUNS; i++) {
+			collection.contains(random.nextInt());
+		}
+		
 	}
 }
