@@ -44,11 +44,13 @@ public class HashSet<T> implements Set<T> {
 		}
 
 		private void setIteratorIndex() {
-			while (iteratorIndex < hashTable.length && (iterator == null || !iterator.hasNext())) {
+			int limit = hashTable.length - 1; // for not doing checking index inside iteration
+			while (iteratorIndex < limit && (iterator == null || !iterator.hasNext())) {
 				iteratorIndex++;
-				if (iteratorIndex < hashTable.length) {
-					iterator = getIterator(iteratorIndex);
-				}
+				iterator = getIterator(iteratorIndex);
+			}
+			if (iteratorIndex == limit && (hashTable[iteratorIndex] == null || !iterator.hasNext())) {
+				iteratorIndex++;
 			}
 
 		}
