@@ -80,20 +80,22 @@ public abstract class CollectionTest {
 	}
 
 	@Test
-	@Disabled
-	void performanceAddTest() {
+	void performanceAddContainsIteratorTest() {
 		Random random = new Random();
 		int[] randomNumbers = random.ints().distinct().limit(N_ELEMENTS).toArray();
-		for (Integer num : numbers) {
+		for(Integer num: numbers) {
 			collection.remove(num);
 		}
-		for (int i = 0; i < N_ELEMENTS; i++) {
+		for(int i = 0; i < N_ELEMENTS; i++) {
 			collection.add(randomNumbers[i]);
 		}
 		assertEquals(N_ELEMENTS, collection.size());
-		for (int i = 0; i < N_RUNS; i++) {
-			collection.contains(random.nextInt());
+		Integer [] actual = new Integer[N_ELEMENTS];
+		int index = 0;
+		for(Integer num: collection) {
+			actual[index++] = num;
 		}
-
+		assertEquals(N_ELEMENTS, index);
+		
 	}
 }
