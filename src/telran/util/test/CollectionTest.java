@@ -60,8 +60,14 @@ public abstract class CollectionTest {
 
 	@Test
 	void removeTest() {
+		assertTrue(collection.remove(10));
+		runTest(new Integer[] { -20, 1, 100, -5 });
+		assertTrue(collection.remove(-20));
+		runTest(new Integer[] { 1, 100, -5 });
 		assertTrue(collection.remove(100));
-		runTest(new Integer[] { -20, 10, 1, -5 });
+		runTest(new Integer[] { 1, -5 });
+		assertTrue(collection.remove(1));
+		runTest(new Integer[] { -5 });
 	}
 
 	@Test
@@ -83,12 +89,15 @@ public abstract class CollectionTest {
 	void performanceAddContainsIteratorTest() {
 		Random random = new Random();
 		int[] randomNumbers = random.ints().distinct().limit(N_ELEMENTS).toArray();
+		
 		for(Integer num: numbers) {
 			collection.remove(num);
 		}
+
 		for(int i = 0; i < N_ELEMENTS; i++) {
 			collection.add(randomNumbers[i]);
 		}
+		
 		assertEquals(N_ELEMENTS, collection.size());
 		Integer [] actual = new Integer[N_ELEMENTS];
 		int index = 0;
