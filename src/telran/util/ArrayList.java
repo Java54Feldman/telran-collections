@@ -1,12 +1,13 @@
 package telran.util;
 
+import java.nio.channels.IllegalSelectorException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
-public class ArrayList<T> implements List<T> {
+public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 	private static final int DEFAULT_CAPACITY = 16;
-	private int size; //0 для int инициализируется по дефолту
 	private T[] array;
 
 	@SuppressWarnings("unchecked")
@@ -25,6 +26,7 @@ public class ArrayList<T> implements List<T> {
 
 	private class ArrayListIterator implements Iterator<T> {
 		int index = 0;
+		boolean flNext = false;
 
 		@Override
 		public boolean hasNext() {
@@ -36,7 +38,16 @@ public class ArrayList<T> implements List<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
+			flNext = true;
 			return array[index++];
+		}
+		@Override
+		public void remove() {
+			if(!flNext) {
+				throw new IllegalStateException();
+			}
+			ArrayList.this.remove(--index);
+			flNext = false;
 		}
 	}
 
@@ -54,27 +65,6 @@ public class ArrayList<T> implements List<T> {
 
 	private void allocate() {
 		array = Arrays.copyOf(array, array.length * 2);
-	}
-
-	@Override
-	public boolean remove(T pattern) {
-		int index = indexOf(pattern);
-		boolean res = false;
-		if (index > -1) {
-			res = true;
-			remove(index);
-		}
-		return res;
-	}
-
-	@Override
-	public boolean contains(T pattern) {
-		return indexOf(pattern) > -1;
-	}
-
-	@Override
-	public int size() {
-		return size;
 	}
 
 	@Override
@@ -130,6 +120,17 @@ public class ArrayList<T> implements List<T> {
 			index--;
 		}
 		return index;
+	}
+	@Override
+	public boolean removeIf(Predicate<T> predicate) {
+		//TODO
+		//Two indexes on one array
+		//no allocation for new array
+		//если идет удаление, то второй из индексов не увеличивается
+		//один индекс увеличивается на каждом проходе(фор)
+		//если есть удаление, то копирование из одного индекса в другой
+		//.... см.запись
+		return false;
 	}
 
 }

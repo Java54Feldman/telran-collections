@@ -4,11 +4,10 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings("unchecked")
-public class HashSet<T> implements Set<T> {
+public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 	private static final int DEFAULT_HASH_TABLE_LENGTH = 16;
 	private static final float DEFAULT_FACTOR = 0.75f;
 	List<T>[] hashTable;
-	int size;
 	float factor;
 
 	private class HashSetIterator implements Iterator<T> {
@@ -53,6 +52,10 @@ public class HashSet<T> implements Set<T> {
 				iteratorIndex++;
 			}
 
+		}
+		@Override
+		public void remove() {
+			//TODO
 		}
 
 	}
@@ -127,11 +130,6 @@ public class HashSet<T> implements Set<T> {
 		int index = getIndex(pattern, hashTable);
 		List<T> list = hashTable[index];
 		return list != null && list.contains(pattern);
-	}
-
-	@Override
-	public int size() {
-		return size;
 	}
 
 	@Override
