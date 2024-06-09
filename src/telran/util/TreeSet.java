@@ -11,7 +11,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	public TreeSet(Comparator<T> comp) {
 		this.comp = comp;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public TreeSet() {
 		this((Comparator<T>) Comparator.naturalOrder());
@@ -31,10 +31,11 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 
 	private class TreeSetIterator implements Iterator<T> {
 		Node<T> current = getLeastFrom(root);
+		Node<T> prev = null;
+		boolean flNext = false;
 
 		@Override
 		public boolean hasNext() {
-
 			return current != null;
 		}
 
@@ -44,12 +45,19 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 				throw new NoSuchElementException();
 			}
 			T res = current.data;
+			prev = current;
 			current = getCurrent(current);
+			flNext = true;
 			return res;
 		}
+
 		@Override
 		public void remove() {
-			//TODO
+			if (!flNext) {
+				throw new IllegalStateException();
+			}
+			TreeSet.this.removeNode(prev);
+			flNext = false;
 		}
 
 	}

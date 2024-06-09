@@ -123,14 +123,19 @@ public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 	}
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
-		//TODO
 		//Two indexes on one array
 		//no allocation for new array
-		//если идет удаление, то второй из индексов не увеличивается
-		//один индекс увеличивается на каждом проходе(фор)
-		//если есть удаление, то копирование из одного индекса в другой
-		//.... см.запись
-		return false;
+		boolean isRemove = false;
+	    int writeIndex = 0;
+	    for (int i = 0; i < size; i++) {
+	        if (!predicate.test(array[i])) {
+	            array[writeIndex++] = array[i];
+	        } else {
+	            isRemove = true;
+	        }
+	    }
+	    size = writeIndex;
+	    return isRemove;
 	}
 
 }

@@ -10,10 +10,21 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 	List<T>[] hashTable;
 	float factor;
 
+	public HashSet(int hashTableLength, float factor) {
+		hashTable = new List[hashTableLength];
+		this.factor = factor;
+	}
+
+	public HashSet() {
+		this(DEFAULT_HASH_TABLE_LENGTH, DEFAULT_FACTOR);
+	}
+
 	private class HashSetIterator implements Iterator<T> {
 		Iterator<T> iterator;
-
 		int iteratorIndex;
+		int prevIteratorIndex;
+		Iterator<T> prevIterator;
+		boolean flNext = false;
 
 		HashSetIterator() {
 			iteratorIndex = 0;
@@ -28,7 +39,6 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 
 		@Override
 		public boolean hasNext() {
-
 			return iteratorIndex < hashTable.length;
 		}
 
@@ -38,7 +48,10 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 				throw new NoSuchElementException();
 			}
 			T res = iterator.next();
+			prevIterator = iterator;
+			prevIteratorIndex = iteratorIndex;
 			setIteratorIndex();
+			flNext = true;
 			return res;
 		}
 
@@ -53,20 +66,20 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 			}
 
 		}
+
 		@Override
 		public void remove() {
-			//TODO
+			if (!flNext) {
+				throw new IllegalStateException();
+			}
+			prevIterator.remove();
+			size--;
+			if (hashTable[prevIteratorIndex].size() == 0) {
+				hashTable[prevIteratorIndex] = null;
+			}
+			flNext = false;
 		}
 
-	}
-
-	public HashSet(int hashTableLength, float factor) {
-		hashTable = new List[hashTableLength];
-		this.factor = factor;
-	}
-
-	public HashSet() {
-		this(DEFAULT_HASH_TABLE_LENGTH, DEFAULT_FACTOR);
 	}
 
 	@Override

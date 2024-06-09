@@ -20,7 +20,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 	@Override
 	public boolean add(T obj) {
-		//O[N]
+		// O[N]
 		Node<T> node = new Node<>(obj);
 		addNode(size, node);
 		return true;
@@ -28,47 +28,55 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		//O[1]
+		// O[1]
 		return new LinkedListIterator();
 	}
 
 	private class LinkedListIterator implements Iterator<T> {
 		Node<T> current = head;
+		Node<T> prev = null;
+		boolean flNext = false;
 
 		@Override
 		public boolean hasNext() {
-			//O[1]
+			// O[1]
 			return current != null;
 		}
 
 		@Override
 		public T next() {
-			//O[1]
+			// O[1]
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
 			T data = current.data;
+			prev = current;
 			current = current.next;
+			flNext = true;
 			return data;
 		}
+
 		@Override
 		public void remove() {
-			//TODO
+			if (!flNext) {
+				throw new IllegalStateException();
+			}
+			LinkedList.this.removeNode(prev);
+			flNext = false;
 		}
-
 
 	}
 
 	@Override
 	public T get(int index) {
-		//O[N]
+		// O[N]
 		List.checkIndex(index, size, true);
 		return getNode(index).data;
 	}
 
 	@Override
 	public void add(int index, T obj) {
-		//O[N]
+		// O[N]
 		List.checkIndex(index, size, false);
 		Node<T> node = new Node<>(obj);
 		addNode(index, node);
@@ -76,7 +84,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 	@Override
 	public T remove(int index) {
-		//O[N]
+		// O[N]
 		List.checkIndex(index, size, true);
 		Node<T> removed = getNode(index);
 		T res = removed.data;
@@ -85,7 +93,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void removeNode(Node<T> node) {
-		//O[1]
+		// O[1]
 		if (node == head) {
 			removeHead();
 		} else if (node == tail) {
@@ -96,6 +104,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		setNulls(node);
 		size--;
 	}
+
 	private void setNulls(Node<T> removed) {
 		removed.next = null;
 		removed.prev = null;
@@ -103,7 +112,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void removeMiddle(Node<T> node) {
-		//O[1]
+		// O[1]
 		Node<T> nodePrev = node.prev;
 		Node<T> nodeNext = node.next;
 		nodePrev.next = nodeNext;
@@ -112,15 +121,15 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void removeTail() {
-		//O[1]
+		// O[1]
 		tail = tail.prev;
 		tail.next = null;
 
 	}
 
 	private void removeHead() {
-		//O[1]
-		if(head == tail) {
+		// O[1]
+		if (head == tail) {
 			head = tail = null;
 		} else {
 			head = head.next;
@@ -131,10 +140,10 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 	@Override
 	public int indexOf(T pattern) {
-		//O[N]
+		// O[N]
 		Node<T> current = head;
 		int index = 0;
-		while(index < size && !Objects.equals(current.data, pattern)) {
+		while (index < size && !Objects.equals(current.data, pattern)) {
 			index++;
 			current = current.next;
 		}
@@ -143,10 +152,10 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 	@Override
 	public int lastIndexOf(T pattern) {
-		//O[N]
+		// O[N]
 		Node<T> current = tail;
 		int index = size - 1;
-		while(index >= 0 && !Objects.equals(current.data, pattern)) {
+		while (index >= 0 && !Objects.equals(current.data, pattern)) {
 			index--;
 			current = current.prev;
 		}
@@ -154,13 +163,13 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private Node<T> getNode(int index) {
-		//O[N]
+		// O[N]
 		return index < size / 2 ? // оптимизация, сложность N
 				getNodeFormHead(index) : getNodeFormTail(index);
 	}
 
 	private Node<T> getNodeFormTail(int index) {
-		//O[N]
+		// O[N]
 		Node<T> current = head;
 		for (int i = 0; i < index; i++) {
 			current = current.next;
@@ -169,7 +178,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private Node<T> getNodeFormHead(int index) {
-		//O[N]
+		// O[N]
 		Node<T> current = tail;
 		for (int i = size - 1; i > index; i--) {
 			current = current.prev;
@@ -178,7 +187,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void addNode(int index, Node<T> node) {
-		//O[1]
+		// O[1]
 		if (index == 0) {
 			addHead(node);
 		} else if (index == size) {
@@ -190,7 +199,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void addMiddle(Node<T> node, int index) {
-		//O[1]
+		// O[1]
 		Node<T> nodeNext = getNode(index);
 		Node<T> nodePrev = nodeNext.prev;
 		nodeNext.prev = node;
@@ -200,7 +209,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void addTail(Node<T> node) {
-		//O[1]
+		// O[1]
 		// head cannot be null
 		tail.next = node;
 		node.prev = tail;
@@ -209,7 +218,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	}
 
 	private void addHead(Node<T> node) {
-		//O[1]
+		// O[1]
 		if (head == null) {
 			head = tail = node;
 		} else {
