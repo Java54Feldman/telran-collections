@@ -35,7 +35,6 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	private class LinkedListIterator implements Iterator<T> {
 		Node<T> current = head;
 		Node<T> prev = null;
-		boolean flNext = false;
 
 		@Override
 		public boolean hasNext() {
@@ -49,20 +48,18 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			T data = current.data;
 			prev = current;
 			current = current.next;
-			flNext = true;
-			return data;
+			return prev.data;
 		}
 
 		@Override
 		public void remove() {
-			if (!flNext) {
+			if(prev == null) {
 				throw new IllegalStateException();
 			}
-			LinkedList.this.removeNode(prev);
-			flNext = false;
+			removeNode(prev);
+			prev = null;
 		}
 
 	}
