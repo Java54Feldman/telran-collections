@@ -125,6 +125,7 @@ public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 	public boolean removeIf(Predicate<T> predicate) {
 		//Two indexes on one array
 		//no allocation for new array
+		//O[N]
 		int indexDest = 0;
 		Predicate<T> negatePred = predicate.negate();
 		int oldSize = size;
