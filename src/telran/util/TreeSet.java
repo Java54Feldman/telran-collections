@@ -5,11 +5,21 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
+	private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	Node<T> root;
 	private Comparator<T> comp;
+	private int spacesPerLevel = DEFAULT_SPACES_PER_LEVEL;
 
 	public TreeSet(Comparator<T> comp) {
 		this.comp = comp;
+	}
+
+	public int getSpacesPerLevel() {
+		return spacesPerLevel;
+	}
+
+	public void setSpacesPerLevel(int spacesPerLevel) {
+		this.spacesPerLevel = spacesPerLevel;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,6 +242,119 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 			}
 		}
 		return node;
+	}
+
+	@Override
+	/**
+	 * Returns the greatest element in this set greater than 
+	 * or equal to the given element, 
+	 * or null if there is no such element.
+	 */
+	public T floor(T key) {
+		// TODO Auto-generated method stub
+		//линейные задачи, без рекурсии
+		return null;
+	}
+	/**
+	 * Returns the least element in this set greater than 
+	 * or equal to the given element, 
+	 * or null if there is no such element.
+	 */
+	@Override
+	public T ceiling(T key) {
+		// TODO Auto-generated method stub
+		//линейные задачи, без рекурсии
+		return null;
+	}
+	/**
+	 * display tree in the following form:
+	 *  -20
+	 *  	10
+	 *  		1
+	 *  			-5
+	 *  		100
+	 */
+	public void displayRootChildren() {
+		//TODO
+		//рекурсивная формулировка!
+		//displayRoot переписывать не надо, он остается
+	}
+	/**
+	 * conversion of tree so that iterating 
+	 * has been in the inversive order
+	 */
+	public void treeInversion() {
+		//TODO
+		//преобразование дерева для итерирования дерева в обратном порядке
+		//рекурсивная формулировка!
+		//displayRoot переписывать не надо, он остается
+	}
+	
+	/**
+	 * displays tree in the following order:
+	 * 			100
+	 * 		10
+	 * 			1
+	 * 				-5
+	 * 	-20
+	 */
+	public void displayTreeRotated() {
+		displayTreeRotated(root, 1); // 1 - уровень нелинейности рута
+		//рекурсивная формулировка: 
+		//сначала печатаем все что справа, 
+		//потом рут, 
+		//потом все что слева
+	}
+
+	private void displayTreeRotated(Node<T> tmpRoot, int level) {
+		if (tmpRoot != null) {
+			displayTreeRotated(tmpRoot.right, level + 1);
+			displayRoot(tmpRoot, level);
+			displayTreeRotated(tmpRoot.left, level + 1);
+		}
+		
+	}
+
+	private void displayRoot(Node<T> tmpRoot, int level) {
+		System.out.printf("%s", " ".repeat(level * spacesPerLevel ));
+		System.out.println(tmpRoot.data);
+	}
+	/**
+	 * 
+	 * @return number of leaves (leaf - node with both left and right nulls)
+	 */
+	public int width() {
+
+		return width(root);
+	}
+	private int width(Node<T> tmpRoot) {
+		int res = 0;
+		if(tmpRoot != null) {
+			if (tmpRoot.left == null && tmpRoot.right == null) {
+				res = 1;
+			} else {
+				res = width(tmpRoot.left) + width(tmpRoot.right);
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * 
+	 * @return number of the nodes of the longest line
+	 */
+	public int height() {
+		return height(root);
+	}
+
+	private int height(Node<T> tmpRoot) {
+		int res = 0;
+		if(tmpRoot != null) {
+			int heightLeft = height(tmpRoot.left);
+			int heightRight = height(tmpRoot.right);
+			res = Math.max(heightLeft, heightRight) + 1;
+		}
+		return res;
 	}
 
 }
