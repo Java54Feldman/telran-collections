@@ -308,6 +308,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 		//затем все, что слева
 		//затем все, что справа
 		displayRootChildren(root, 1);
+		System.out.println("========================");
 	}
 
 	private void displayRootChildren(Node<T> tmpRoot, int level) {
@@ -323,22 +324,26 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	 * conversion of tree so that iterating has been in the inversive order
 	 */
 	public void treeInversion() {
-		TreeSet<T> tmpTreeSet = new TreeSet<>();
-		for (T elem : this) {
-			tmpTreeSet.add(elem);
+		inversion(root);
+		if(root != null && ((root.left != null) || (root.right != null))) {
+			comp = comp.reversed();
 		}
-		this.clear();
-		comp = (Comparator<T>) Comparator.reverseOrder();
-		treeInversion(tmpTreeSet);
 	}
 
-	private void treeInversion(TreeSet<T> source) {
-		if(source.size() != 0) {
-			T lastElement = source.last();
-			source.remove(lastElement);
-			this.add(lastElement);
-			treeInversion(source);
+
+	private void inversion(Node<T> node) {
+		if(node != null) {
+			swapNode(node);
+			inversion(node.left);
+			inversion(node.right);
 		}
+		
+	}
+
+	private void swapNode(Node<T> node) {
+		Node<T> tmp = node.left;
+		node.left = node.right;
+		node.right = tmp;
 		
 	}
 
