@@ -3,6 +3,7 @@ package telran.util;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	private static final int DEFAULT_SPACES_PER_LEVEL = 2;
@@ -60,7 +61,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 
 		@Override
 		public void remove() {
-			if(prev == null) {
+			if (prev == null) {
 				throw new IllegalStateException();
 			}
 			removeNode(prev);
@@ -246,64 +247,115 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 
 	@Override
 	/**
-	 * Returns the greatest element in this set greater than 
-	 * or equal to the given element, 
-	 * or null if there is no such element.
+	 * Returns the greatest element in this set less than or equal to the given
+	 * element, or null if there is no such element.
 	 */
 	public T floor(T key) {
-		// TODO Auto-generated method stub
-		//линейные задачи, без рекурсии
-		return null;
+		T res = null;
+		if (comp.compare(key, last()) > 0) {
+			res = last();
+		} else {
+			if (comp.compare(key, first()) >= 0) {
+				if (contains(key)) {
+					res = key;
+				} else {
+					Iterator<T> it = iterator();
+					while (it.hasNext() && comp.compare(it.next(), key) < 0) {
+						res = it.next();
+					}
+				}
+			}
+		}
+		return res;
 	}
+
 	/**
-	 * Returns the least element in this set greater than 
-	 * or equal to the given element, 
-	 * or null if there is no such element.
+	 * Returns the least element in this set greater than or equal to the given
+	 * element, or null if there is no such element.
 	 */
 	@Override
 	public T ceiling(T key) {
-		// TODO Auto-generated method stub
-		//линейные задачи, без рекурсии
-		return null;
+		T res = null;
+		if (comp.compare(key, first()) < 0) {
+			res = first();
+		} else {
+			if (comp.compare(key, last()) <= 0) {
+				if (contains(key)) {
+					res = key;
+				} else {
+					Iterator<T> it = iterator();
+					res = it.next();
+					while (it.hasNext() && comp.compare(res, key) < 0) {
+						res = it.next();
+					}
+				}
+			}
+		}
+		return res;
 	}
+
 	/**
-	 * display tree in the following form:
+	 * display tree in the following form: 
 	 *  -20
-	 *  	10
-	 *  		1
-	 *  			-5
-	 *  		100
+	 *     10
+	 *        1
+	 *           -5
+	 *        100
 	 */
 	public void displayRootChildren() {
-		//TODO
-		//рекурсивная формулировка!
-		//displayRoot переписывать не надо, он остается
+		//рекурсивная формулировка:
+		//сначала печатай рут,
+		//затем все, что слева
+		//затем все, что справа
+		displayRootChildren(root, 1);
 	}
+
+	private void displayRootChildren(Node<T> tmpRoot, int level) {
+		if (tmpRoot != null) {
+			displayRoot(tmpRoot, level);
+			displayRootChildren(tmpRoot.left, level + 1);
+			displayRootChildren(tmpRoot.right, level + 1);
+		}
+		
+	}
+
 	/**
-	 * conversion of tree so that iterating 
-	 * has been in the inversive order
+	 * conversion of tree so that iterating has been in the inversive order
 	 */
 	public void treeInversion() {
-		//TODO
-		//преобразование дерева для итерирования дерева в обратном порядке
-		//рекурсивная формулировка!
-		//displayRoot переписывать не надо, он остается
+		TreeSet<T> tmpTreeSet = new TreeSet<>();
+		for (T elem : this) {
+			tmpTreeSet.add(elem);
+		}
+		this.clear();
+		comp = (Comparator<T>) Comparator.reverseOrder();
+		treeInversion(tmpTreeSet);
 	}
-	
+
+	private void treeInversion(TreeSet<T> source) {
+		if(source.size() != 0) {
+			T lastElement = source.last();
+			source.remove(lastElement);
+			this.add(lastElement);
+			treeInversion(source);
+		}
+		
+	}
+
 	/**
-	 * displays tree in the following order:
-	 * 			100
-	 * 		10
-	 * 			1
-	 * 				-5
-	 * 	-20
+	 * displays tree in the following order: 
+	 *           100
+	 *         10
+	 *           1
+	 *              -5
+	 *   -20  
 	 */
 	public void displayTreeRotated() {
 		displayTreeRotated(root, 1); // 1 - уровень нелинейности рута
-		//рекурсивная формулировка: 
-		//сначала печатаем все что справа, 
-		//потом рут, 
-		//потом все что слева
+		// рекурсивная формулировка:
+		// сначала печатаем все что справа,
+		// потом рут,
+		// потом все что слева
 	}
 
 	private void displayTreeRotated(Node<T> tmpRoot, int level) {
@@ -312,24 +364,25 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 			displayRoot(tmpRoot, level);
 			displayTreeRotated(tmpRoot.left, level + 1);
 		}
-		
+
 	}
 
 	private void displayRoot(Node<T> tmpRoot, int level) {
-		System.out.printf("%s", " ".repeat(level * spacesPerLevel ));
+		System.out.printf("%s", " ".repeat(level * spacesPerLevel));
 		System.out.println(tmpRoot.data);
 	}
+
 	/**
 	 * 
 	 * @return number of leaves (leaf - node with both left and right nulls)
 	 */
 	public int width() {
-
 		return width(root);
 	}
+
 	private int width(Node<T> tmpRoot) {
 		int res = 0;
-		if(tmpRoot != null) {
+		if (tmpRoot != null) {
 			if (tmpRoot.left == null && tmpRoot.right == null) {
 				res = 1;
 			} else {
@@ -349,7 +402,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 
 	private int height(Node<T> tmpRoot) {
 		int res = 0;
-		if(tmpRoot != null) {
+		if (tmpRoot != null) {
 			int heightLeft = height(tmpRoot.left);
 			int heightRight = height(tmpRoot.right);
 			res = Math.max(heightLeft, heightRight) + 1;
