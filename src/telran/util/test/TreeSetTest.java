@@ -3,6 +3,7 @@ package telran.util.test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Iterator;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,5 +47,38 @@ class TreeSetTest extends SortedSetTest {
 	@Test
 	void heightTest() {
 		assertEquals(4, treeSet.height());
+	}
+	@Test
+	void sortedSequenceTreeTest() {
+		TreeSet<Integer> treeSet = new TreeSet<>();
+		int[] sortedArray = new Random().ints().distinct()
+				.limit(N_ELEMENTS).sorted().toArray();
+		transformArray(sortedArray);
+		//порядок такой, чтобы без балансировки дерево после размещения будет балансированным
+		//нужно изменить массив...
+		//половина элементов расположить, листья встанут сами
+		for (int num : sortedArray) {
+			treeSet.add(num);
+		}
+		balancedTreeTest(treeSet);
+	}
+	private void balancedTreeTest(TreeSet<Integer> treeSet) {
+		assertEquals(20, treeSet.height());
+		assertEquals((N_ELEMENTS + 1) / 2, treeSet.width());
+	}
+	private void transformArray(int[] sortedArray) {
+		// TODO 
+				
+	}
+	@Test
+	void balanceTreeTest() {
+		createBigRandomCollection(new Random());
+		treeSet.balance();
+		balancedTreeTest(treeSet);
+		int index = 0;
+		for (Integer num : treeSet) {
+			index++;
+		}
+		assertEquals(treeSet.size(), index);
 	}
 }

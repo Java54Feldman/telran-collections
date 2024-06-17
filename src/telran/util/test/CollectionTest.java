@@ -17,7 +17,7 @@ import telran.util.Collection;
 import telran.util.List;
 
 public abstract class CollectionTest {
-	private static final int N_ELEMENTS = 1_048_575;
+	protected static final int N_ELEMENTS = 1_048_575;
 	private static final int N_RUNS = 10000000;
 	protected Collection<Integer> collection;
 	Integer[] numbers = { -20, 10, 1, 100, -5 };
@@ -127,7 +127,7 @@ public abstract class CollectionTest {
 		
 	}
 
-	private void createBigRandomCollection(Random random) {
+	protected void createBigRandomCollection(Random random) {
 		int[] randomNumbers = random.ints().distinct().limit(N_ELEMENTS).toArray();
 		for(Integer num: numbers) {
 			collection.remove(num);
@@ -154,4 +154,5 @@ public abstract class CollectionTest {
 		createBigRandomCollection(new Random());
 		collection.clear();
 	}
+
 }
