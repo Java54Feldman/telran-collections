@@ -10,6 +10,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	Node<T> root;
 	private Comparator<T> comp;
 	private int spacesPerLevel = DEFAULT_SPACES_PER_LEVEL;
+	private static final int SEPARATOR_LENGTH = 20;
 
 	public TreeSet(Comparator<T> comp) {
 		this.comp = comp;
@@ -251,22 +252,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	 * element, or null if there is no such element.
 	 */
 	public T floor(T key) {
-		T res = null;
-		if (comp.compare(key, last()) > 0) {
-			res = last();
-		} else {
-			if (comp.compare(key, first()) >= 0) {
-				if (contains(key)) {
-					res = key;
-				} else {
-					Iterator<T> it = iterator();
-					while (it.hasNext() && comp.compare(it.next(), key) < 0) {
-						res = it.next();
-					}
-				}
-			}
-		}
-		return res;
+		return floorCeiling(key, true);
 	}
 
 	/**
@@ -275,23 +261,19 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	 */
 	@Override
 	public T ceiling(T key) {
+		return floorCeiling(key, false);
+	}
+	private T floorCeiling(T key, boolean isFloor) {
 		T res = null;
-		if (comp.compare(key, first()) < 0) {
-			res = first();
-		} else {
-			if (comp.compare(key, last()) <= 0) {
-				if (contains(key)) {
-					res = key;
-				} else {
-					Iterator<T> it = iterator();
-					res = it.next();
-					while (it.hasNext() && comp.compare(res, key) < 0) {
-						res = it.next();
-					}
-				}
+		int compRes = 0;
+		Node<T> current = root;
+		while (current != null && (compRes = comp.compare(key, current.data)) != 0) {
+			if ((compRes < 0 && !isFloor) || (compRes > 0 && isFloor)) {
+				res = current.data;
 			}
+			current = compRes < 0 ? current.left : current.right;
 		}
-		return res;
+		return current == null ? res : current.data;
 	}
 
 	/**
@@ -307,8 +289,8 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 		//сначала печатай рут,
 		//затем все, что слева
 		//затем все, что справа
+		System.out.printf("%s %s\n","ROOT->CHILDREN", "=".repeat(SEPARATOR_LENGTH));
 		displayRootChildren(root, 1);
-		System.out.println("========================");
 	}
 
 	private void displayRootChildren(Node<T> tmpRoot, int level) {
@@ -329,7 +311,6 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 			comp = comp.reversed();
 		}
 	}
-
 
 	private void inversion(Node<T> node) {
 		if(node != null) {
@@ -356,6 +337,7 @@ public class TreeSet<T> extends AbstractCollection<T> implements SortedSet<T> {
 	 *   -20  
 	 */
 	public void displayTreeRotated() {
+		System.out.printf("%s %s\n","ROTATED on -90 degrees", "=".repeat(SEPARATOR_LENGTH));
 		displayTreeRotated(root, 1); // 1 - уровень нелинейности рута
 		// рекурсивная формулировка:
 		// сначала печатаем все что справа,
