@@ -54,9 +54,6 @@ class TreeSetTest extends SortedSetTest {
 		int[] sortedArray = new Random().ints().distinct()
 				.limit(N_ELEMENTS).sorted().toArray();
 		transformArray(sortedArray);
-		//порядок такой, чтобы без балансировки дерево после размещения будет балансированным
-		//нужно изменить массив...
-		//половина элементов расположить, листья встанут сами
 		for (int num : sortedArray) {
 			treeSet.add(num);
 		}
@@ -67,8 +64,28 @@ class TreeSetTest extends SortedSetTest {
 		assertEquals((N_ELEMENTS + 1) / 2, treeSet.width());
 	}
 	private void transformArray(int[] sortedArray) {
-		// TODO 
-				
+		int size = sortedArray.length;
+		int[] balancedArray = new int[size];
+		int log2 = (int) Math.round(Math.log(size) / Math.log(2)); //height tree-array - 1 = log2(size) для определения смещения индекса
+		transformArray(sortedArray, balancedArray, size, log2, 0); // массив исходный, массив конечный, длина, уровень высоты, индекс для конечного массива
+		for (int i = 0; i < size; i++) {
+			sortedArray[i] = balancedArray[i]; 
+		}
+						
+	}
+	private void transformArray(int[] sortedArray, int[] balancedArray, int indexSource, int log2, int indexDest) {
+		int size = sortedArray.length;
+		if(indexSource != 0) {
+			indexSource = indexSource / 2;
+			balancedArray[indexDest++] = sortedArray[indexSource];
+			int shift = (int) Math.pow(2, log2);
+			int indexShift = indexSource + shift;
+			while (indexShift < size && indexDest < size) {
+				balancedArray[indexDest++] = sortedArray[indexShift];
+				indexShift = indexShift + shift;
+			}
+			transformArray(sortedArray, balancedArray, indexSource, log2 - 1, indexDest);
+		}
 	}
 	@Test
 	void balanceTreeTest() {
