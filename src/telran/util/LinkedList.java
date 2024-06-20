@@ -8,7 +8,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	Node<T> head;
 	Node<T> tail;
 
-	private static class Node<T> {
+	static class Node<T> { // package доступность
 		T data;
 		Node<T> prev;
 		Node<T> next;
@@ -32,7 +32,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		return new LinkedListIterator();
 	}
 
-	private class LinkedListIterator implements Iterator<T> {
+	class LinkedListIterator implements Iterator<T> { // package доступность
 		Node<T> current = head;
 		Node<T> prev = null;
 
@@ -89,7 +89,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		return res;
 	}
 
-	private void removeNode(Node<T> node) {
+	void removeNode(Node<T> node) { // package доступность
 		// O[1]
 		if (node == head) {
 			removeHead();
@@ -183,7 +183,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		return current;
 	}
 
-	private void addNode(int index, Node<T> node) {
+	void addNode(int index, Node<T> node) {
 		// O[1]
 		if (index == 0) {
 			addHead(node);
