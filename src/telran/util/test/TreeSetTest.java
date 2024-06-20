@@ -64,29 +64,26 @@ class TreeSetTest extends SortedSetTest {
 		assertEquals((N_ELEMENTS + 1) / 2, treeSet.width());
 	}
 	private void transformArray(int[] sortedArray) {
-		int size = sortedArray.length;
-		int[] balancedArray = new int[size];
-		int log2 = (int) Math.round(Math.log(size) / Math.log(2)); //height tree-array - 1 = log2(size) для определения смещения индекса
-		transformArray(sortedArray, balancedArray, size, log2, 0); // массив исходный, массив конечный, длина, уровень высоты, индекс для конечного массива
-		for (int i = 0; i < size; i++) {
-			sortedArray[i] = balancedArray[i]; 
-		}
-						
+	int [] balanceOrderedArray = new int[sortedArray.length];
+	int [] indexRef = {0};
+	transformArray(balanceOrderedArray, sortedArray,
+			indexRef, 0, sortedArray.length - 1);
+	System.arraycopy(balanceOrderedArray, 0,
+			sortedArray, 0, N_ELEMENTS);
+
+}
+private void transformArray(int[] balanceOrderedArray, int[] sortedArray,
+		int[] indexRef, int left, int right) {
+	if (left <= right) {
+		int indexRoot = (left + right) / 2;
+		int index = indexRef[0];
+		balanceOrderedArray[index] = sortedArray[indexRoot];
+		indexRef[0]++;
+		transformArray(balanceOrderedArray, sortedArray, indexRef, left, indexRoot - 1);
+		transformArray(balanceOrderedArray, sortedArray, indexRef, indexRoot + 1,
+				right);
 	}
-	private void transformArray(int[] sortedArray, int[] balancedArray, int indexSource, int log2, int indexDest) {
-		int size = sortedArray.length;
-		if(indexSource != 0) {
-			indexSource = indexSource / 2;
-			balancedArray[indexDest++] = sortedArray[indexSource];
-			int shift = (int) Math.pow(2, log2);
-			int indexShift = indexSource + shift;
-			while (indexShift < size && indexDest < size) {
-				balancedArray[indexDest++] = sortedArray[indexShift];
-				indexShift = indexShift + shift;
-			}
-			transformArray(sortedArray, balancedArray, indexSource, log2 - 1, indexDest);
-		}
-	}
+}
 	@Test
 	void balanceTreeTest() {
 		createBigRandomCollection(new Random());
