@@ -3,7 +3,7 @@ package telran.util;
 import java.util.Objects;
 
 public interface Map<K, V> {
-	public static class Entry<K, V> implements Comparable<K> {
+	public static class Entry<K, V> implements Comparable<Entry<K, V>> {
 		private final K key;
 		private V value;
 		public Entry(K key, V value) {
@@ -12,8 +12,8 @@ public interface Map<K, V> {
 		}
 		@SuppressWarnings("unchecked")
 		@Override
-		public int compareTo(K o) {
-			return ((Comparable<K>)key).compareTo(o);
+		public int compareTo(Entry<K,V> o) {
+			return ((Comparable<K>)key).compareTo(o.key);
 		}
 		@Override
 		public int hashCode() {

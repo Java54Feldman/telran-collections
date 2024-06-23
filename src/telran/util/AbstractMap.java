@@ -16,17 +16,28 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 
 	@Override
 	public V put(K key, V value) {
-		// TODO Auto-generated method stub
-		//также как в гете.
-		//если существует, то меняем только значение сеттером
-		//нет - добавляем новую пару
-		return null;
+		Entry<K, V> pattern = new Entry<>(key, value);
+		Entry<K, V> entry = set.get(pattern);
+		V res = null;
+		if (entry != null) {
+			res = entry.getValue();
+			entry.setValue(value);
+		} else {
+			set.add(pattern);
+		}
+		return res;
 	}
 
 	@Override
 	public V remove(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		Entry<K, V> pattern = new Entry<>(key, null);
+		Entry<K, V> entry = set.get(pattern);
+		V res = null;
+		if (entry != null) {
+			res = entry.getValue();
+			set.remove(entry);
+		}
+		return res;
 	}
 
 	@Override
