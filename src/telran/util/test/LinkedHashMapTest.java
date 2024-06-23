@@ -5,10 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import telran.util.LinkedHashMap;
 
 class LinkedHashMapTest extends AbstractMapTest {
-	@BeforeEach
 	@Override
+	@BeforeEach
 	void setUp() {
-		map = new LinkedHashMap<Integer, Integer>();
+		map = new LinkedHashMap<>();
 		super.setUp();
 	}
+	@Override
+	protected <T> void sort(T[] expected, T[] actual) {
+		// keeps order neither expected nor actual should be sorted
+		
+	}
+
+	
+
 }

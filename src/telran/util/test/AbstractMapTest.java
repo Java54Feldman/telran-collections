@@ -4,80 +4,88 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import telran.util.Map;
+import telran.util.Map.Entry;
 import telran.util.Set;
 
-class AbstractMapTest {
-	protected Map<Integer, Integer> map;
-	Integer[] keys = { 0, 2, 4, 6, 7 };
-	Integer[] values = { -20, 10, 1, 100, -5 };
-	int newKey = 50;
-	int newValue = 500;
-
-	@BeforeEach
-	void setUp() {
-		for (int i = 0; i < keys.length; i++) {
-			map.put(keys[i], values[i]);
+abstract class AbstractMapTest {
+ protected Map<Integer, Integer> map;
+ protected Integer[] keys = {-1, 4, 20, 3, -20, 10};
+ void setUp() {
+	 //Map designated y = x ^ 2
+	 for(Integer key: keys) {
+		 map.put(key, key * key);
+	 }
+ }
+ @Test
+ void getTest() {
+	 assertEquals(1, map.get(-1));
+	 assertNull(map.get(1));
+ }
+ @Test
+ void getOrDefaultTest() {
+	 assertEquals(1, map.getOrDefault(-1, 0));
+	 assertEquals(0, map.getOrDefault(1, 0));
+ }
+ @Test
+ void putTest() {
+	 int newValue = 100000;
+	 assertNull(map.put(1, 1));
+	 assertEquals(1, map.get(1));
+	 assertEquals(1,map.put(1, newValue));
+	 assertEquals(newValue, map.get(1));
+ }
+ @Test
+ void putIfAbsentTest() {
+	 int newValue = 100000;
+	 assertNull(map.putIfAbsent(1, 1));
+	 assertEquals(1, map.get(1));
+	 assertEquals(1,map.putIfAbsent(1, newValue));
+	 assertEquals(1, map.get(1));
+ }
+ @Test
+ void removeTest() {
+	 assertNull(map.remove(1));
+	 assertEquals(1, map.remove(-1));
+	 assertNull(map.get(-1));
+ }
+ @Test
+ void entrySetTest() {
+	 Set<Entry<Integer, Integer>> entrySet = map.entrySet();
+	 // {-1, 4, 20, 3, -20, 10};
+	 Entry [] expected = {
+			 new Entry<Integer, Integer>(-1, 1),
+			 new Entry<Integer, Integer>(4, 16),
+			 new Entry<Integer, Integer>(20, 400),
+			 new Entry<Integer, Integer>(3, 9),
+			 new Entry<Integer, Integer>(-20, 400),
+			 new Entry<Integer, Integer>(10, 100)
+	 };
+	 runIterableTest(expected, entrySet);
+ }
+ @Test
+ void keySetTest() {
+	// 
+	 Integer [] expected = {-1, 4, 20, 3, -20, 10};
+	 runIterableTest(expected, map.keySet());
+ }
+ @Test
+ void valuesTest() {
+	// 
+	 Integer [] expected = {1, 16, 400, 9, 400, 100};
+	 runIterableTest(expected, map.values());
+ }
+ protected <T> void runIterableTest(T[] expected, Iterable<T> iterable) {
+		T[] actual = Arrays.copyOf(expected, expected.length);
+		int index = 0;
+		for(T obj: iterable) {
+			actual[index++] = obj;
 		}
+		sort(expected, actual);
+		assertArrayEquals(expected, actual);
+		
 	}
-	@Test
-	void getTest() {
-		int actualFirst = values[0];
-		int actualLast = values[values.length - 1];
-		assertEquals(actualFirst, map.get(keys[0]));
-		assertEquals(actualLast, map.get(keys[keys.length - 1]));		
-		assertNull(map.get(newKey));
-	}
-	@Test
-	void getOrDefaultTest() {
-		int actual = values[1];
-		assertEquals(actual, map.getOrDefault(keys[1], newValue));
-		assertEquals(newValue, map.getOrDefault(newKey, newValue));
-	}
-	@Test
-	void putTest() {
-		assertNull(map.put(newKey, newValue));
-		assertEquals(newValue, map.get(newKey));
-		assertEquals(values[0], map.put(keys[0], newValue));
-		assertEquals(newValue, map.get(keys[0]));
-	}
-	@Test
-	void putIfAbsentTest() {
-	    assertNull(map.putIfAbsent(newKey, newValue));
-	    assertEquals(newValue, map.get(newKey));
-
-	    int existingValue = map.get(keys[0]);
-	    assertEquals(existingValue, map.putIfAbsent(keys[0], newValue));
-	    assertEquals(existingValue, map.get(keys[0]));
-	}
-	@Test
-	void removeTest() {
-		assertNull(map.remove(newKey));
-		assertEquals(values[0], map.remove(keys[0]));
-		assertNull(map.remove(keys[0]));
-	}
-	@Test
-	void keySetTest() {
-		Integer[] actual = map.keySet().stream().toArray(Integer[]::new);
-		assertArrayEquals(keys, actual);
-	}
-	@Test
-	void entrySetTest() {
-	    Set<Map.Entry<Integer, Integer>> entrySet = map.entrySet();
-	    assertEquals(keys.length, entrySet.size());
-	    for (int i = 0; i < keys.length; i++) {
-	        Map.Entry<Integer, Integer> expectedEntry = new Map.Entry<>(keys[i], values[i]);
-	        assertTrue(entrySet.contains(expectedEntry));
-	    }
-	}
-	@Test
-	void valuesTest() {
-		Integer[] actual = map.values().stream().sorted().toArray(Integer[]::new);
-		values = Arrays.stream(values).sorted().toArray(Integer[]::new);
-		assertArrayEquals(values, actual);
-	}
-	
+protected abstract <T>void sort(T[] expected, T[] actual);
 }

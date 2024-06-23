@@ -41,10 +41,11 @@ public class TreeMap<K, V> extends AbstractMap<K, V> implements SortedMap<K, V> 
 		return new TreeSet<K>();
 	}
 	public TreeMap() {
-		set = new TreeSet<>();
+		this(Comparator.naturalOrder());
 	}
 	public TreeMap(Comparator<Entry<K, V>> comp) {
 		set = new TreeSet<>(comp);
+		
 	}
 
 }
