@@ -2,6 +2,7 @@ package telran.util.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -12,6 +13,7 @@ import telran.util.TreeSet;
 
 class TreeSetTest extends SortedSetTest {
 	TreeSet<Integer> treeSet;
+
 	@Override
 	@BeforeEach
 	void setUp() {
@@ -19,10 +21,12 @@ class TreeSetTest extends SortedSetTest {
 		super.setUp();
 		treeSet = (TreeSet<Integer>) collection;
 	}
+
 	@Test
 	void displayRootChildrenTest() {
 		treeSet.displayRootChildren();
 	}
+
 	@Test
 	void treeInversionTest() {
 		treeSet.treeInversion();
@@ -35,55 +39,58 @@ class TreeSetTest extends SortedSetTest {
 		assertArrayEquals(expected, actual);
 		assertTrue(treeSet.contains(100));
 	}
+
 	@Test
 	void displayTreeRotatedTest() {
 		treeSet.setSpacesPerLevel(4);
 		treeSet.displayTreeRotated();
 	}
+
 	@Test
 	void widthTest() {
 		assertEquals(2, treeSet.width());
 	}
+
 	@Test
 	void heightTest() {
 		assertEquals(4, treeSet.height());
 	}
+
 	@Test
 	void sortedSequenceTreeTest() {
 		TreeSet<Integer> treeSet = new TreeSet<>();
-		int[] sortedArray = new Random().ints().distinct()
-				.limit(N_ELEMENTS).sorted().toArray();
+		int[] sortedArray = new Random().ints().distinct().limit(N_ELEMENTS).sorted().toArray();
 		transformArray(sortedArray);
 		for (int num : sortedArray) {
 			treeSet.add(num);
 		}
 		balancedTreeTest(treeSet);
 	}
+
 	private void balancedTreeTest(TreeSet<Integer> treeSet) {
 		assertEquals(20, treeSet.height());
 		assertEquals((N_ELEMENTS + 1) / 2, treeSet.width());
 	}
-	private void transformArray(int[] sortedArray) {
-	int [] balanceOrderedArray = new int[sortedArray.length];
-	int [] indexRef = {0};
-	transformArray(balanceOrderedArray, sortedArray,
-			indexRef, 0, sortedArray.length - 1);
-	System.arraycopy(balanceOrderedArray, 0,
-			sortedArray, 0, N_ELEMENTS);
 
-}
-private void transformArray(int[] balanceOrderedArray, int[] sortedArray,
-		int[] indexRef, int left, int right) {
-	if (left <= right) {
-		int indexRoot = (left + right) / 2;
-		int index = indexRef[0];
-		balanceOrderedArray[index] = sortedArray[indexRoot];
-		indexRef[0]++;
-		transformArray(balanceOrderedArray, sortedArray, indexRef, left, indexRoot - 1);
-		transformArray(balanceOrderedArray, sortedArray, indexRef, indexRoot + 1,
-				right);
+	private void transformArray(int[] sortedArray) {
+		int[] balanceOrderedArray = new int[sortedArray.length];
+		int[] indexRef = { 0 };
+		transformArray(balanceOrderedArray, sortedArray, indexRef, 0, sortedArray.length - 1);
+		System.arraycopy(balanceOrderedArray, 0, sortedArray, 0, N_ELEMENTS);
+
 	}
-}
+
+	private void transformArray(int[] balanceOrderedArray, int[] sortedArray, int[] indexRef, int left, int right) {
+		if (left <= right) {
+			int indexRoot = (left + right) / 2;
+			int index = indexRef[0];
+			balanceOrderedArray[index] = sortedArray[indexRoot];
+			indexRef[0]++;
+			transformArray(balanceOrderedArray, sortedArray, indexRef, left, indexRoot - 1);
+			transformArray(balanceOrderedArray, sortedArray, indexRef, indexRoot + 1, right);
+		}
+	}
+
 	@Test
 	void balanceTreeTest() {
 		createBigRandomCollection(new Random());
@@ -94,5 +101,33 @@ private void transformArray(int[] balanceOrderedArray, int[] sortedArray,
 			index++;
 		}
 		assertEquals(treeSet.size(), index);
+	}
+
+	@Test
+	void interviewTest() {
+		Comparator<Integer> toStringComparator = (o1, o2) -> o1.toString().compareTo(o2.toString());
+		Comparator<Integer> sumOfDigitsComparator = (num1, num2) -> getSumOfDigits(num1)
+				.compareTo(getSumOfDigits(num2));
+		Integer[] array = { 33, 22, 9, 11, 23, 35, 91 };
+		TreeSet<Integer> treeDef = new TreeSet<>();
+		processTree(treeDef, array, "By Default");
+		TreeSet<Integer> treeDig = new TreeSet<>(sumOfDigitsComparator);
+		processTree(treeDig, array, "By Sum Of Digits");
+		TreeSet<Integer> treeStr = new TreeSet<>(toStringComparator);
+		processTree(treeStr, array, "By toString");
+	}
+
+	private void processTree(TreeSet tree, Integer[] array, String title) {
+		for (Integer num : array) {
+			if (!tree.add(num)) {
+				System.out.println("TreeSet error " + num);
+			}
+		}
+		System.out.println(title);
+		tree.displayRootChildren();
+	}
+
+	private Integer getSumOfDigits(Integer num) {
+		return num.toString().chars().map(Character::getNumericValue).sum();
 	}
 }
